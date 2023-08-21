@@ -6,12 +6,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Abdulrahman-02/Go-bank/internal/storage"
 	"github.com/Abdulrahman-02/Go-bank/internal/types"
 	"github.com/gorilla/mux"
 )
 
 type APIserver struct {
 	listenAddr string
+	store      storage.Storage
 }
 
 type APIerror struct {
@@ -20,7 +22,7 @@ type APIerror struct {
 
 func writeJSON(w http.ResponseWriter, status int, v any) error {
 	w.WriteHeader(status)
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(v)
 }
 
@@ -38,8 +40,12 @@ func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
 }
 
 // NewAPIServer creates a new API server
-func NewAPIserver(listenAddr string) *APIserver {
-	return &APIserver{listenAddr: listenAddr}
+func NewAPIserver(listenAddr string, store storage.Storage) *APIserver {
+	return &APIserver{
+		listenAddr: listenAddr,
+		store:      store,
+	}
+
 }
 
 // Run starts the API server
